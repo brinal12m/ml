@@ -14,7 +14,7 @@ def calculate_adj_cap(graph):
     '''
     adj_mat = graph.adjacency_matrix()
     adj_mat_tilda = torch.eye(adj_mat.shape[0]) + adj_mat
-    d_tilda_inv_sqrt = torch.diag(torch.pow(graph.in_degrees(), -0.5))
+    d_tilda_inv_sqrt = torch.diag(torch.pow(torch.sum(adj_mat_tilda, 1), -0.5)) 
     return torch.mm(torch.mm(d_tilda_inv_sqrt, adj_mat_tilda), d_tilda_inv_sqrt)
 
 
