@@ -29,8 +29,8 @@ torch.manual_seed(args.seed)
 
 
 # Obtain the data set
-dataset = dgl.data.CoraGraphDataset()
-# dataset = dgl.data.CiteseerGraphDataset()
+# dataset = dgl.data.CoraGraphDataset()
+dataset = dgl.data.CiteseerGraphDataset()
 
 graph = dataset[0]
 
