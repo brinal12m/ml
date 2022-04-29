@@ -1,3 +1,8 @@
 gcn-dgl/__pycache__/layer.cpython-39.pyc
 gcn-dgl/__pycache__/model.cpython-39.pyc
 gcn-dgl/__pycache__/utils.cpython-39.pyc
+gcn-dgl/__pycache__/early_stopping.cpython-39.pyc
+gcn-dgl/__pycache__/first_order_term_only.cpython-39.pyc
+gcn-dgl/__pycache__/gcn.cpython-39.pyc
+gcn-dgl/__pycache__/mlp.cpython-39.pyc
+gcn-dgl/__pycache__/single_parameter.cpython-39.pyc

@@ -5,18 +5,20 @@ import numpy as np
 import matplotlib.pyplot as plt
 import torch.optim as optim
 import easydict
-from layer import Layer
-from model import Model
-from utils import calculate_accuracy, calculate_adj_cap, customize_mask
+from gcn import Model 
+from utils import calculate_accuracy, calculate_adj_cap_gcn, customize_mask
+from early_stopping import EarlyStopping
 import time
 
 
 # Training settings
 args = easydict.EasyDict({ 'seed': int(42),
          'epochs': int(200),
-         'hidden': 16*8,
+         'hidden': 16*8,  
          'lr': float(0.01),
-         'dropout': float(0.5)
+         'dropout': float(0.5), # float(0.5) or None
+         'patience': int(20), 
+         'stop_crit_ratio': float(0.0005)
         })
 
 # Set the constant seed
@@ -48,27 +50,31 @@ train_mask, val_mask, test_mask = customize_mask(labels.size(), 0.1, 0.3, 0.6)
 print( 'Custom dataset info:'
         'Train samples: {:d}'.format(torch.sum(train_mask == True)),
         'Validation samples: {:d}'.format(torch.sum(val_mask == True)),
-        'Test samples: {:f}'.format(torch.sum(test_mask == True)))
+        'Test samples: {:d}'.format(torch.sum(test_mask == True)))
 
 
-adj_mat_cap = calculate_adj_cap(graph)
+adj_mat_cap = calculate_adj_cap_gcn(graph)
 
 # Model , optimizer and loss function
 model = Model(features.size()[1], args.hidden,  dataset.num_classes, args.dropout)
 optimizer = optim.Adam(model.parameters(), lr=args.lr)
 
-loss_fcn = F.cross_entropy
-# loss_fcn = F.nll_loss
+loss_fn = F.cross_entropy
+# loss_fn = F.nll_loss
 
 
 def main():
     loss_list=[]
     acc_list=[]
-    
+    es = EarlyStopping(patience=args.patience, min_delta= args.stop_crit_ratio)
+
     for epoch in range(args.epochs):
         acc, loss = train(epoch)
         loss_list.append(loss)
         acc_list.append(acc)
+        if es.step(acc):
+            print("Early stopping...")
+            break
 
     plot_stats(acc_list, loss_list)
     test()
@@ -96,7 +102,7 @@ def train(epoch):
     
     output = model(features, adj_mat_cap)
     logp = F.log_softmax(output, 1)
-    loss = loss_fcn(logp[train_mask], labels[train_mask])
+    loss = loss_fn(logp[train_mask], labels[train_mask])
 
     loss.backward()
     optimizer.step()
@@ -104,7 +110,7 @@ def train(epoch):
     output = model(features, adj_mat_cap)
     acc = calculate_accuracy(output, labels, val_mask)
 
-    print("Epoch {:03d}: Loss: {:.3f}, Accuracy: {:.3%} Time: {:.4f}s"
+    print("Epoch {:03d}: Loss: {:.4f}, Accuracy: {:.4f} Time: {:.4f}s"
         .format(epoch, loss.item(), acc, time.time() - t))
 
     return acc, loss.item()
