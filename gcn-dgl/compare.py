@@ -117,10 +117,6 @@ def main():
     test('SP', model_sp, features, adj_mat_sp)
     test('MLP', model_mlp, features, None)
 
-
-    
-
-
 def train(model_name, model, optimizer, features, adj_mat, epoch):
     t = time.time()
 
