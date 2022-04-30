@@ -16,6 +16,6 @@ class EarlyStopping(object):
         if(len(self.metric_list) < self.patience):
             return False
         
-        avg_metric_in_patience_interval = self.metric_list[-1] - np.mean(self.metric_list[-(self.patience+1):-1])
-        if np.abs(avg_metric_in_patience_interval) < self.min_delta:
+        delta = self.metric_list[-1] - np.mean(self.metric_list[-(self.patience+1):-1])
+        if np.abs(delta) < self.min_delta:
             return True

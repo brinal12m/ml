@@ -72,7 +72,7 @@ def main():
         acc, loss = train(epoch)
         loss_list.append(loss)
         acc_list.append(acc)
-        if es.step(acc):
+        if es.step(loss):
             print("Early stopping...")
             break
 
@@ -101,8 +101,8 @@ def train(epoch):
     optimizer.zero_grad() 
     
     output = model(features, adj_mat_cap)
-    logp = F.log_softmax(output, 1)
-    loss = loss_fn(logp[train_mask], labels[train_mask])
+    # log_output = F.log_softmax(output, 1)
+    loss = loss_fn(output[train_mask], labels[train_mask])
 
     loss.backward()
     optimizer.step()
