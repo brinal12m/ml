@@ -4,6 +4,9 @@ import torch.nn.functional as F
 from torch.nn.parameter import Parameter
 import math
 
+'''
+Layer class
+'''
 class Layer(nn.Module):
     """Applies a layered data transformation to the incoming data 
     """
